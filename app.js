@@ -42,9 +42,11 @@ app.get('/calculate', function (req, res){
 
 });
 
+//read and display chat
 app.get('/chat', function (req, res){
     fs.readFile('chat.json', function(err, data){
         if (err){
+            //if there is no file create it
             if (err.code === 'ENOENT'){
                 console.log('File not found!');
                 chatCreateJson();
@@ -57,7 +59,7 @@ app.get('/chat', function (req, res){
             }
         }
         var chatJson = JSON.parse(data);
-        var chatLog = chatJson.logs;
+        var chatLog = chatJson.logs; //the log[] array inside the json
         
         var toSend = "";
 
@@ -74,11 +76,13 @@ app.get('/chat', function (req, res){
     });
 });
 
+//add something to the chatlog
 app.post('/chat/submit', function (req, res) {
-    var input = req.body.formData;
+    var input = req.body.formData; //formData is the name of the field in the body
 
     fs.readFile('chat.json', function(err, data) {
         if (err){
+            //if there is no file then then create it
             if (err.code === 'ENOENT'){
                 console.log('File not found!');
                 chatCreateJson();
@@ -106,6 +110,7 @@ app.post('/chat/submit', function (req, res) {
 
 });
 
+//create the base json with a single array named "logs", will contain the chat messages
 function chatCreateJson(){
     var newJson = {
         "logs":["Welcome to chat!"]
@@ -117,6 +122,11 @@ function chatCreateJson(){
         }
     });
 };
+
+//todo
+app.get('/promise', function (req, res){
+
+});
 
 app.listen(port = 3000, function (){
     console.log(`Listening on port ${port}!`);
