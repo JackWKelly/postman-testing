@@ -1,7 +1,7 @@
 {
   "name": "postman-testing",
   "version": "1.0.0",
-  "description": "",
+  "description": "Getting used to NodeJS etc.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/JackWKelly/postman-testing#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.4"
   }
 }
