@@ -1,4 +1,5 @@
 const fs = require('fs');
+const request = require('request')
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -8,12 +9,17 @@ app.get('/hello', function (req, res){
     res.send('Hello World');
 });
 
+app.get('/nobacktick', function(req, res){
+    var notick = "testing";
+    res.send(notick);
+});
+
 app.get('/calculate', function (req, res){
     //try to read url parameters
     var answer = 0;
-    var n1 = parseInt(req.query.n1, 10);
-    var n2 = parseInt(req.query.n2, 10);
-    var op = req.query.op.toString();
+    var n1 = parseInt(req.query.number1, 10);
+    var n2 = parseInt(req.query.number2, 10);
+    var op = req.query.operator.toString();
 
     if(Number.isInteger(n1) && Number.isInteger(n2)){
         switch(op){
@@ -126,15 +132,83 @@ function chatCreateJson(){
 //todo
 app.get('/promise', function (req, res){
     console.log("1");
-    new Promise(
-        function(resolve, reject){
-            setTimeout(100);
+    new Promise(function(resolve, reject){
+        setTimeout(function(){
             console.log("2");
-            resolve();
-        }
-    );
+        },200);
+        resolve();
+    });
     console.log("3");
     res.send("Success");
+});
+
+//Initial 1, Callback 1, Callback 2, Initial 2
+app.get('/callback', function (req, res){
+    res.send("Success");
+    console.log("Initial 1");
+    callbackTest1(callbackTest2);
+    console.log("Initial 2");
+});
+
+function callbackTest1(callbackFunc){
+    console.log("Callback1");
+    var index = 100000000;
+    for(index; index > 0; index--){
+        //waste time
+    };
+    callbackFunc();
+}
+
+function callbackTest2(){
+    console.log("Callback2");
+}
+
+//Initial 1, Callback 1, Callback 1.1, Initial 2, Callback2, Callback2.await, Callback2.1
+app.get('/asynccallback', function (req, res){
+    res.send("Success");
+    console.log("Initial 1");
+    asyncCallbackTest1(asyncCallbackTest2);
+    console.log("Initial 2");
+});
+
+function asyncCallbackTest1(callbackFunc){
+    console.log("Callback1");
+    setTimeout(callbackFunc, 200);
+    console.log("Callback1.1");
+}
+
+async function asyncCallbackTest2(){
+    console.log("Callback2");
+    await new Promise(
+        function(resolve, reject){
+            setTimeout(function(){
+                console.log("Callback2.await");
+                resolve();
+            }, 200)
+        }
+    );
+    console.log("Callback2.1");
+}
+
+app.get('/api/time', function(req, res){
+    console.log("Attempting to access API")
+    apiResult = new Promise(function(resolve, reject){
+        request('http://worldclockapi.com/api/json/utc/now', {json: true}, function (err, res, body){
+            console.log("So I think this only appears once the data has arrived.");
+            if(err) {
+                reject(err);
+            }
+            var time = JSON.stringify(body);
+            resolve(time);
+        });
+    })
+    .then(function(test){
+        console.log(`${test}`);
+    })
+    .catch(function(err){
+        console.log(`PANIC ${err}`);
+    });
+    console.log("Now we're at the bottom of the main process thing.");
 });
 
 app.listen(port = 3000, function (){
