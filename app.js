@@ -125,7 +125,16 @@ function chatCreateJson(){
 
 //todo
 app.get('/promise', function (req, res){
-
+    console.log("1");
+    new Promise(
+        function(resolve, reject){
+            setTimeout(100);
+            console.log("2");
+            resolve();
+        }
+    );
+    console.log("3");
+    res.send("Success");
 });
 
 app.listen(port = 3000, function (){
